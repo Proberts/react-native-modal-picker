@@ -27,7 +27,7 @@ const propTypes = {
     initValue: PropTypes.string,
     style: View.propTypes.style,
     selectStyle: View.propTypes.style,
-    optionContainer: View.propTypes.style,
+    optionContainerStyle: View.propTypes.style,
     optionStyle: View.propTypes.style,
     optionTextStyle: Text.propTypes.style,
     optionNumberOfLines: PropTypes.number,
@@ -47,7 +47,7 @@ const defaultProps = {
     initValue: 'Select me!',
     style: {},
     selectStyle: {},
-    optionContainer: {},
+    optionContainerStyle: {},
     optionStyle: {},
     optionTextStyle: {},
     optionNumberOfLines: undefined,
@@ -78,7 +78,7 @@ export default class ModalPicker extends BaseComponent {
             animationType: 'none',
             modalVisible: false,
             transparent: false,
-            selected: 'please select'
+            selected: 'please select',
             selectedObject: {},
         };
     }
@@ -154,7 +154,7 @@ export default class ModalPicker extends BaseComponent {
         return (
 
             <View style={[styles.overlayStyle, this.props.overlayStyle]} key={'modalPicker'+(componentIndex++)}>
-                <View style={[styles.optionContainer, this.props.optionContainer]}>
+                <View style={[styles.optionContainer, this.props.optionContainerStyle]}>
                     <ScrollView keyboardShouldPersistTaps='always'>
                         <View style={{paddingHorizontal:10}}>
                             {options}
