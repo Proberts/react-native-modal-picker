@@ -23,11 +23,15 @@ let componentIndex = 0;
 const propTypes = {
     data: PropTypes.array,
     onChange: PropTypes.func,
+    onClose: PropTypes.func,
     initValue: PropTypes.string,
     style: View.propTypes.style,
     selectStyle: View.propTypes.style,
+    optionContainer: View.propTypes.style,
     optionStyle: View.propTypes.style,
     optionTextStyle: Text.propTypes.style,
+    optionNumberOfLines: PropTypes.number,
+    optionEllipsizeMode: PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
     sectionStyle: View.propTypes.style,
     sectionTextStyle: Text.propTypes.style,
     cancelStyle: View.propTypes.style,
@@ -39,11 +43,15 @@ const propTypes = {
 const defaultProps = {
     data: [],
     onChange: ()=> {},
+    onClose: ()=> {},
     initValue: 'Select me!',
     style: {},
     selectStyle: {},
+    optionContainer: {},
     optionStyle: {},
     optionTextStyle: {},
+    optionNumberOfLines: undefined,
+    optionEllipsizeMode: 'tail',
     sectionStyle: {},
     sectionTextStyle: {},
     cancelStyle: {},
@@ -60,16 +68,18 @@ export default class ModalPicker extends BaseComponent {
 
         this._bind(
             'onChange',
+            'onClose',
             'open',
             'close',
             'renderChildren'
         );
 
         this.state = {
-            animationType: 'slide',
+            animationType: 'none',
             modalVisible: false,
             transparent: false,
             selected: 'please select'
+            selectedObject: {},
         };
     }
 
@@ -84,10 +94,21 @@ export default class ModalPicker extends BaseComponent {
       }
     }
 
+  	componentWillUpdate(nextProps, nextState){
+      if (nextState.modalVisible != this.state.modalVisible && nextState.modalVisible === false) {
+        this.onClose(nextState.selectedObject);
+      }
+  	}
+
+
     onChange(item) {
         this.props.onChange(item);
-        this.setState({selected: item.label});
+        this.setState({selected: item.label, selectedObject: item});
         this.close();
+    }
+
+    onClose(item) {
+        this.props.onClose(item);
     }
 
     close() {
@@ -114,7 +135,9 @@ export default class ModalPicker extends BaseComponent {
         return (
             <TouchableOpacity key={option.key} onPress={()=>this.onChange(option)}>
                 <View style={[styles.optionStyle, this.props.optionStyle]}>
-                    <Text style={[styles.optionTextStyle,this.props.optionTextStyle]}>{option.label}</Text>
+                    <Text numberOfLines={this.props.optionNumberOfLines}
+                      ellipsizeMode={this.props.optionEllipsizeMode}
+                      style={[styles.optionTextStyle,this.props.optionTextStyle]}>{option.label}</Text>
                 </View>
             </TouchableOpacity>)
     }
@@ -129,9 +152,10 @@ export default class ModalPicker extends BaseComponent {
         });
 
         return (
+
             <View style={[styles.overlayStyle, this.props.overlayStyle]} key={'modalPicker'+(componentIndex++)}>
-                <View style={styles.optionContainer}>
-                    <ScrollView keyboardShouldPersistTaps>
+                <View style={[styles.optionContainer, this.props.optionContainer]}>
+                    <ScrollView keyboardShouldPersistTaps='always'>
                         <View style={{paddingHorizontal:10}}>
                             {options}
                         </View>
