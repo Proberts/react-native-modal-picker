@@ -68,7 +68,6 @@ export default class ModalPicker extends BaseComponent {
 
         this._bind(
             'onChange',
-            'onClose',
             'open',
             'close',
             'renderChildren'
@@ -94,27 +93,18 @@ export default class ModalPicker extends BaseComponent {
       }
     }
 
-  	componentWillUpdate(nextProps, nextState){
-      if (nextState.modalVisible != this.state.modalVisible && nextState.modalVisible === false) {
-        this.onClose(nextState.selectedObject);
-      }
-  	}
-
 
     onChange(item) {
         this.props.onChange(item);
         this.setState({selected: item.label, selectedObject: item});
-        this.close();
+        this.close(item);
     }
 
-    onClose(item) {
-        this.props.onClose(item);
-    }
-
-    close() {
+    close(result) {
       this.setState({
         modalVisible: false
       });
+      this.props.onClose(result);
     }
 
     open() {
@@ -162,7 +152,7 @@ export default class ModalPicker extends BaseComponent {
                     </ScrollView>
                 </View>
                 <View style={styles.cancelContainer}>
-                    <TouchableOpacity onPress={this.close}>
+                    <TouchableOpacity onPress={() => this.close(null)}>
                         <View style={[styles.cancelStyle, this.props.cancelStyle]}>
                             <Text style={[styles.cancelTextStyle,this.props.cancelTextStyle]}>{this.props.cancelText}</Text>
                         </View>
